@@ -65,7 +65,7 @@ $ pip install langdetect
 ````
 for this.
 
-(A few files may not get placed into either directory. These are typically empty files: delete them.)
+(A few files may not get placed into either of the `en` or `hi` directories. These are typically empty files: delete them.)
 
 
 ### Stats
@@ -88,8 +88,8 @@ Finally, run
 
 ````
 $ python stats.py dataset
-````
-where `dataset` is the directory containing the dump of `*.txt` transcript files. You should get the following output:
+```
+You should get the following output:
 
 ````
 676 English speeches, 425 Hindi speeches.

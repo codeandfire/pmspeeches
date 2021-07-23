@@ -10,7 +10,6 @@ This code has been run using Python 3.9 and the following package versions:
 ````
 beautifulsoup4==4.9.3
 langdetect==1.0.9
-nltk==3.6.2
 selenium==3.141.0
 tqdm==4.61.2
 urllib3==1.26.6
@@ -66,67 +65,3 @@ $ pip install langdetect
 for this.
 
 (A few files may not get placed into either of the `en` or `hi` directories. These are typically empty files: delete them.)
-
-
-### Stats
-
-To get some quick statistics on this corpus, run `stats.py`. First, you will need to install `nltk`:
-
-````
-$ pip install nltk
-````
-
-and then run in a Python interpreter
-
-````python
->>> import nltk
->>> nltk.download('punkt')
->>> nltk.download('stopwords')
-````
-
-Finally, run
-
-````
-$ python stats.py dataset
-````
-
-You should get the following output:
-
-````
-676 English speeches, 425 Hindi speeches.
-
-Among English speeches ...
-        65948 total sentences.
-        546905 tokens with stopwords removed, 22974 unique.
-        TTR = 0.042
-
-Most frequent tokens with counts:
-        india           8687
-        country         5476
-        people          4479
-        friends         4150
-        today           3890
-        new             3412
-        world           3367
-        government      2747
-        time            2222
-        years           2166
-        work            1985
-        like            1735
-        development     1730
-        ji              1730
-        indian          1420
-        farmers         1381
-        make            1371
-        year            1316
-        great           1298
-        made            1292
-        important       1283
-        countries       1249
-        come            1202
-        last            1179
-        take            1163
-````
-or something similar if you have scraped the dataset yourself.
-
-(The statistics are primarily for the English speeches. That is because `nltk` does not support Hindi out-of-the-box, and while there are other libraries such as [indic-nlp-library](https://pypi.org/project/indic-nlp-library/) available, I haven't tried them out.)

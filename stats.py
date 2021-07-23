@@ -2,32 +2,20 @@ from collections import Counter
 import os
 import sys
 
-from langdetect import detect
-from langdetect.lang_detect_exception import LangDetectException
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 
 # number of most frequent tokens to display.
 DISPLAY_TOKENS = 25
 
-en_docs, hi_docs = 0, 0
 raw_text = ""
-for entry in os.scandir(sys.argv[1]):
+en_docs = 0
+for entry in os.scandir(os.path.join(sys.argv[1], 'en')):
     with open(entry.path, 'r', encoding='utf-8', errors='ignore') as f:
-        contents = f.read()
-        try:
-            lang = detect(contents)
-        except LangDetectException:
-            # print(f"could not detect language of {entry.name}")
-            pass
-        else:
-            if lang == 'en':
-                en_docs += 1
-                raw_text = raw_text + " " + contents
-            elif lang == 'hi':
-                hi_docs += 1
-            else:
-                print(f"{entry.name} detected as language {lang}")
+        raw_text = raw_text + ' ' + f.read()
+        en_docs += 1
+
+hi_docs = len(os.listdir(os.path.join(sys.argv[1], 'hi')))
 
 print(f"{en_docs} English speeches, {hi_docs} Hindi speeches.")
 print()

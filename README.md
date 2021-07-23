@@ -52,13 +52,28 @@ WARNING:root
 ````
 in the log file, and not the other entries of the log file.)
 
+Finally, move the `*.txt` files to a directory named `dataset` and run
+
+````
+$ python split_en_hi.py dataset
+````
+
+to split the speeches into English and Hindi speeches. You will first need to install
+
+````
+$ pip install langdetect
+````
+for this.
+
+(A few files may not get placed into either directory. These are typically empty files: delete them.)
+
 
 ### Stats
 
-To get some quick statistics on this corpus, run `stats.py`. First, you will need to install the following:
+To get some quick statistics on this corpus, run `stats.py`. First, you will need to install `nltk`:
 
 ````
-$ pip install langdetect nltk
+$ pip install nltk
 ````
 
 and then run in a Python interpreter

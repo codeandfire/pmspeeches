@@ -89,6 +89,7 @@ Finally, run
 ````
 $ python stats.py dataset
 ```
+
 You should get the following output:
 
 ````

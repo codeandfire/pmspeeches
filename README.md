@@ -74,3 +74,8 @@ $ pip install langdetect
 for this.
 
 (A few files may not get placed into either of the `en` or `hi` directories. These are typically empty files: delete them.)
+
+
+### Exploration
+
+To get some basic insights from this dataset, take a look at the file `exploration.md`.

@@ -1,3 +1,4 @@
+import datetime
 import logging
 import pickle
 from urllib3 import PoolManager
@@ -45,7 +46,7 @@ for url in tqdm(links, desc='downloading'):
         ]
 
     except AttributeError:
-        logging.warning(f"No <div> of class 'news-bg' for {url}")
+        logging.warning(f"No <div> of class 'news-bg' found for speech with url {url}")
         continue
 
     # some of the <p> tags turn out to be empty at times.
@@ -55,7 +56,7 @@ for url in tqdm(links, desc='downloading'):
     try:
         title = soup.title.string
     except AttributeError:
-        logging.warning(f"No title for {url}")
+        logging.warning(f"No <title> found for speech with url {url}")
         continue
 
     # the actual title of the speech is always followed by a redundant
@@ -69,6 +70,21 @@ for url in tqdm(links, desc='downloading'):
         c for c in title.strip().lower() 
         if c.isalpha() or c.isdigit() or c == ' '
     ]).replace(' ', '-')
+
+    # get date the speech was made.
+    # a simple analysis of the HTML shows us that the date is contained in
+    # a <span> tag with class='date'
+    try:
+        date = soup.find('span', 'date').string
+    except AttributeError:
+        logging.warning(f"No <span> of class 'date' found for speech with url {url}")
+        continue
+
+    # the date is in the format "<day> <monthname>, <year>"
+    # for e.g. "19 Jul, 2021".
+    # convert it to the standard YYYY-MM-DD format and prefix it to the title.
+    date = datetime.datetime.strptime(date, '%d %b, %Y').strftime('%Y-%m-%d')
+    title = date + '-' + title
 
     # encoding='utf-8' is required because of hindi text.
     with open(title+'.txt', 'w', encoding='utf-8', errors='ignore') as f:

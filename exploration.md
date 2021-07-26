@@ -657,7 +657,7 @@ commitments . season , there were blasts in mumbai when i
 
 ### Dispersion Plot
 
-As a last experiment let us look at lexical dispersion plots, which visually compare word usage over the entire corpus. For this, you will need `numpy` and `matplotlib` installed:
+Next, let us look at lexical dispersion plots, which visually compare word usage over the entire corpus. For this, you will need `numpy` and `matplotlib` installed:
 
 ````
 $ pip install numpy matplotlib
@@ -692,3 +692,178 @@ As you can see
   - "ladakh" shows an uptick just before "corona" appears, indicating the formation of the Union Territory of Ladakh which occurred in August 2019,
   - "vaccine" was mentioned along with "corona", but was mentioned frequently only at the extreme latter end, indicating the time around which vaccines were made available to the Indian public,
   - "health" was mentioned frequently throughout the Prime Minister's tenure.
+
+
+### Speech Titles
+
+The titles of the speeches are a subject of analysis themselves. They can be found in the names of the `.txt` files, and typically reflect the occasion on which the speech was given.
+
+Let us collect and tokenize all of these titles:
+````python
+>>> raw_titles = []
+>>> for entry in os.scandir('dataset/en/'):
+	title = entry.name
+	# to get rid of the extension .txt
+	title = title[:title.index('.txt')]
+	raw_titles.append(title.split('-'))
+>>> len(raw_titles)
+707
+>>> raw_titles[0]
+['2014', '08', '15', 'pms', 'address', 'to', 'the', 'nation', 'from', 'the', 'ramparts', 'of', 'the', 'red', 'fort', 'on', 'the', '68th', 'independence', 'day'] 
+````
+Let us look at the number of speeches that have been given each year from 2014-2021.
+````python
+>>> year_count = {y: 0 for y in range(2014, 2021+1)}
+>>> for title in raw_titles:
+	year_count[int(title[0])] += 1
+>>> # check that the calculation is okay
+    sum(year_count.values()) == len(raw_titles)
+True
+>>> from pprint import pprint
+>>> pprint(year_count)
+{2014: 15,
+ 2015: 84,
+ 2016: 89,
+ 2017: 74,
+ 2018: 37,
+ 2019: 95,
+ 2020: 192,
+ 2021: 121}
+````
+In 2014 only 15 speeches were given, which is understandable since the PM took office in May 2014, when half the year was over. In 2020 the number of speeches surges to 192, as well as in 2021 where 121 speeches have been made up to July 2021 (this dataset was collected in July 2021): this is probably due to the coronavirus pandemic. The drop in 2018 to 37 speeches is surprising: there is no reason that I know of to explain this drop.
+
+(Of course, the Hindi speeches should be included as well for a complete picture. But let us leave them out for simplicity.)
+
+Let us get an idea of the kind of occasions on which these speeches were made. First, we flatten out `raw_titles`, normalize the words to lowercase and remove the date part of the title:
+````python
+>>> raw_titles = [w.lower() for title in raw_titles for w in title[3:]]
+````
+Then let us convert the titles into a `Text` object:
+````python
+>>> titles = Text(raw_titles)
+>>> titles
+<Text: pms address to the nation from the ramparts...>
+````
+Let us look at the 30 most frequent words in these titles:
+````python
+>>> vocab = titles.vocab()
+>>> freq_words = [word for word, count in vocab.most_common(30)]
+>>> print(tokenwrap(freq_words, separator='; '))
+````
+````
+pms; of; the; at; address; in; on; to; india; statement; text;
+remarks; summit; speech; during; inauguration; mann; ki; baat; with;
+press; and; visit; pm; all; by; radio; nation; session; media
+````
+
+and then we can examine some concordances to get an idea of the different kinds of occasions involved:
+````python
+>>> titles.concordance('address', lines=5)
+````
+````
+Displaying 5 of 383 matches:
+pms address to the nation from the ramparts of 
+ji english rendering of text of pms address at run for unity at rajpath on the 
+asia summit nay pyi taw text of pms address at civic reception hosted by premie
+hosted by premier of queensland pms address to the joint session of the austral
+on of the australian parliament pms address to the fiji parliament pms speech a
+````
+````python
+>>> titles.concordance('statement', lines=5)
+````
+````
+Displaying 5 of 101 matches:
+glish rendering of the pms opening statement at the indiaasean summit pms remar
+agar text of prime ministers media statement during joint press interaction wit
+hua university beijing text of pms statement to media at joint press statement 
+ statement to media at joint press statement with chinese premier mr li keqiang
+n parliament text of the pms press statement after the signing of agreements in
+````
+````python
+>>> titles.concordance('remarks', lines=5)
+````
+````
+Displaying 5 of 77 matches:
+ ki baat to the nation on radio pms remarks at the launch of the book virat pur
+tement at the indiaasean summit pms remarks at the 12th indiaasean summit nay p
+aw myanmar english rendering of pms remarks at the east asia summit nay pyi taw
+o text of pms address to unesco pms remarks at the inaugural session of hannove
+ india radio on 26th april 2015 pms remarks at the launch of indiachina forum o
+````
+````python
+>>> titles.concordance('summit', lines=5)
+````
+````
+Displaying 5 of 72 matches:
+opening statement at the indiaasean summit pms remarks at the 12th indiaasean 
+ pms remarks at the 12th indiaasean summit nay pyi taw myanmar english renderi
+ing of pms remarks at the east asia summit nay pyi taw text of pms address at 
+ parliament pms speech at the saarc summit text of pms address at the world di
+xt of pms speech at vibrant gujarat summit in gandhinagar text of prime minist
+````
+````python
+>>> titles.concordance('inauguration', lines=5)
+````
+````
+Displaying 5 of 66 matches:
+text of pms address at the joint inauguration of the indogerman business summi
+november 2015 pms address at the inauguration of the indian pavilion at cop21 
+ 2016 text of pms address at the inauguration of newly constructed building of
+ fleet review 2016 pms speech at inauguration of make in india week mumbai tex
+it to belgium pms remarks at the inauguration of the 3rd asia ministerial conf
+````
+````python
+>>> titles.concordance('mann', lines=5)
+````
+````
+Displaying 5 of 65 matches:
+glish rendering of text of pms first mann ki baat to the nation on radio pms r
+rendering of text of prime ministers mann ki baat on all india radio english r
+ering of the text of prime ministers mann ki baat on all india radio on 14th d
+n bengaluru english rendering of pms mann ki baat address on all india radio t
+rendering of text of prime ministers mann ki baat on all india radio on 26th a
+````
+````python
+>>> titles.concordance('visit', lines=5)
+````
+````
+Displaying 5 of 53 matches:
+pms media statement during the state visit of president of united republic of t
+ecture indias singapore story during visit to singapore text of pms statement t
+016 press statement by pm during his visit to belgium pms remarks at the inaugu
+ms statement to the media during his visit to iran pms address at the plenary s
+rat press statement by pm during his visit to switzerland pms keynote speech at
+````
+````python
+>>> titles.concordance('session', lines=5)
+````
+````
+Displaying 5 of 33 matches:
+queensland pms address to the joint session of the australian parliament pms ad
+unesco pms remarks at the inaugural session of hannover messe text of pms addre
+s intervention by pm at g20 working session on inclusive growth global economy 
+tervention by pm at the g20 working session enhancing resilience text of pms sp
+ paris pms statement at the plenary session in cop21 summit at paris pms statem
+````
+````python
+>>> titles.concordance('interaction', lines=5)
+````
+````
+Displaying 5 of 23 matches:
+edia statement during joint press interaction with president of united states o
+nhofer institute at bengaluru pms interaction with african journalists at the e
+is the parliament of maldives pms interaction with secretaries pms departure st
+n economic forum pms speech at an interaction with women self help groups in au
+construction project in nepal pms interaction with winners of pradhan mantri ra
+````
+````python
+>>> titles.concordance('briefing', lines=5)
+````
+````
+Displaying 5 of 21 matches:
+ mongolia pms remarks at the press briefing with president park geunhye text o
+f the pms statement in joint press briefing with pm of netherlands text of the
+tement to media in the joint press briefing with prime minister of bangladesh 
+nt to media during the joint press briefing with president of uzbekistan at ta
+tement to media in the joint press briefing with president of kyrgyzstan at bi
+````

@@ -38,28 +38,28 @@ $ python scraping/extract_speeches.py
 This can take an hour or so to run. You will see your current directory getting filled up with `.txt` files containing the speech transcripts.
 
 This script also creates a log file `extract_speeches.log` in the current directory, containing the URLs of speeches that failed to download correctly. Typically, these are the results of timeouts: you should run `extract_speeches.py` again on these URLs, and they should download correctly this time. You can do this as follows: in Bash on Linux, you can run
-```bash
+```
 $ grep "^WARNING:root" extract_speeches.log | grep -o "https.*" | sort | uniq > links.txt
 ```
 to extract the URLs which have failed to download, and then in Python
 ```python
->>> with open('links.txt', 'r') as f:
-	links = f.read().splitlines()
->>> import pickle
->>> with open('links.pkl', 'wb') as f:
-	pickle.dump(links, f)
+import pickle
+with open('links.txt', 'r') as f:
+    links = f.read().splitlines()
+with open('links.pkl', 'wb') as f:
+    pickle.dump(links, f)
 ```
 Then, run
 ```
 $ python scraping/extract_speeches.py
 ```
 Finally, delete `links.txt`:
-```bash
+```
 $ rm links.txt
 ```
 
 Now, move the `*.txt` files to a directory named `dataset`. On Linux, you can do this using
-```bash
+```
 $ mkdir dataset
 $ mv *.txt dataset/
 ```
